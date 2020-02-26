@@ -62,7 +62,7 @@ namespace FishInfo
                 string locationName = locdata.Key;
 
                 if (locationName == "fishingGame" || locationName == "Temp") continue; //don't want these - what the fuck even is temp
-                if (locationName == "BugLand") locationName = "MutantBugLair"; //fucking bugland lmao
+                //if (locationName == "BugLand") locationName = "MutantBugLair"; //fucking bugland lmao
                 
                 string[] seasonData;
                 for (int i = 4; i <= 7; i++)

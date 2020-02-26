@@ -1,6 +1,9 @@
 ﻿using Harmony;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
+using System;
 using System.Reflection;
 
 namespace FishInfo
@@ -13,9 +16,10 @@ namespace FishInfo
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
+
         [HarmonyPatch(typeof(CollectionsPage))]
         [HarmonyPatch("createDescription")]
-        public class CollectionsPagePatches
+        public class CollectionsPage_CreateDescription
         {
             public static void Postfix(CollectionsPage __instance, ref string __result, int index)
             {
@@ -27,14 +31,14 @@ namespace FishInfo
                 string[] split = itemData.Split(new char[] { '/' });
 
                 if (!split[3].Contains("Fish")) { return; } //break if it isn't a fish
-
-                FishData loadedData;
-                if (ModEntry.FishInfo.TryGetValue(index, out loadedData))
+                
+                if (ModEntry.FishInfo.TryGetValue(index, out FishData loadedData))
                 {
-                    __result += ModEntry.FishInfo[index];
+                    __result += loadedData;
                 }
+                
             }
         }
-
+        
     }
 }

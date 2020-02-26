@@ -1,4 +1,6 @@
 ﻿using Harmony;
+using StardewValley;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,10 +27,10 @@ namespace FishInfo
 
         internal void AddLocation(string location)
         {
-            string ToAdd = Regex.Replace(char.ToUpper(location[0]) + location.Substring(1), "([A-Z0-9]+)", " $1").Trim();
-            if (!CaughtIn.Contains(ToAdd))
+            //string ToAdd = Regex.Replace(char.ToUpper(location[0]) + location.Substring(1), "([A-Z0-9]+)", " $1").Trim();
+            if (!CaughtIn.Contains(location))
             {
-                CaughtIn.Add(ToAdd);
+                CaughtIn.Add(location);
             }
         }
         internal void AddTimes(int StartTime, int EndTime)
@@ -58,30 +60,30 @@ namespace FishInfo
         {
             if (time == 1200)
             {
-                return "midday";
+                return Translation.GetString("time.midday");
             }
             else if (time == 2400)
             {
-                return "midnight";
+                return Translation.GetString("time.midnight");
             }
             else if (time < 1200)
             {
-                return FormatTime(time) + "am";
+                return FormatTime(time) + Translation.BaseGameTranslation("Strings\\StringsFromCSFiles:DayTimeMoneyBox.cs.10370");
             }
             else if (time < 2400)
             {
-                return FormatTime(time - 1200) + "pm";
+                return FormatTime(time - 1200) + Translation.BaseGameTranslation("Strings\\StringsFromCSFiles:DayTimeMoneyBox.cs.10371");
             }
             else
             {
-                return FormatTime(time - 2400) + "am";
+                return FormatTime(time - 2400) + Translation.BaseGameTranslation("Strings\\StringsFromCSFiles:DayTimeMoneyBox.cs.10370");
             }
         }
 
         private string FormatTime(int time)
         {
             string sTime = time.ToString();
-
+            
             if (sTime.Length == 3)
             {
                 sTime = sTime.Insert(1, ":");
@@ -98,7 +100,7 @@ namespace FishInfo
         {
             if (CatchingTimes.Count == 1 && CatchingTimes[0].StartTime == 600 && CatchingTimes[0].EndTime == 2600)
             {
-                return "All day!";
+                return Translation.GetString("time.allday");
             }
             List<string> strings = new List<string>();
             foreach (TimePair times in CatchingTimes)
@@ -112,24 +114,42 @@ namespace FishInfo
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
+
             sb.AppendLine();
+
             if (IsCrabPot)
             {
-                sb.AppendLine($"Crab Pot in: {CaughtIn.Join()}");
+                sb.AppendLine(
+                    Translation.GetString(
+                        "location.crabpot", 
+                        new
+                        {
+                            location = CaughtIn.Join(new Func<string, string>(Translation.GetLocationName))
+                        }
+                    )
+                );
             }
             else
             {
+                sb.AppendLine($"{Translation.GetString("location.prefix")}:");
+                sb.Append("  ");
+
                 if (CaughtIn.Count == 0)
                 {
-                    CaughtIn.Add("Unknown - Mines or event");
+                    sb.AppendLine(Translation.GetString("location.none"));
                 }
-                sb.AppendLine($"Caught in: {CaughtIn.Join()}");
+                else
+                {
+                    sb.AppendLine(Game1.parseText(CaughtIn.Join(new Func<string, string>(Translation.GetLocationName)), Game1.smallFont, 256));
+                }
+                
                 if (season != Season.None)
                 {
-                    sb.AppendLine($"Season: {season.ToString().Replace("_", " ")}");
+                    sb.AppendLine(Game1.parseText($"{Translation.GetString("season.prefix")}:{Environment.NewLine}  {Translation.GetString(season)}", Game1.smallFont, 256));
                 }
-                sb.AppendLine($"Time: {CalcTimeString()}");
-                sb.AppendLine($"Weather: {weather.ToString()}");
+                sb.AppendLine(Game1.parseText($"{Translation.GetString("time.prefix")}:{Environment.NewLine}  {CalcTimeString()}", Game1.smallFont, 256));
+                sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:{Environment.NewLine}  {Translation.GetString(weather)}", Game1.smallFont, 256));
+               
             }
             return sb.ToString();
         }
