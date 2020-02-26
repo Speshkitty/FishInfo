@@ -79,20 +79,33 @@ namespace FishInfo
 
                         
                         int FishID = int.Parse(seasonData[fish]);
+
+                        if(FishID == 153)
+                        {
+                            //
+                        }
+
                         FishData fd = GetOrCreateData(FishID);
 
-                        if (seasonData[fish + 1] == "0")
+                        if (locationName.Equals("forest", StringComparison.OrdinalIgnoreCase))
                         {
-                            locationName = "ForestRiver";
+                            if (seasonData[fish + 1] == "0" || seasonData[fish + 1] == "-1")
+                            {
+                                fd.AddLocation("ForestRiver");
+                            }
+                            if (seasonData[fish + 1] == "1" || seasonData[fish + 1] == "-1")
+                            {
+                                fd.AddLocation("ForestPond");
+                            }
                         }
-                        else if (seasonData[fish + 1] == "1")
+                        else
                         {
-                            locationName = "ForestPond";
+
+                            fd.AddLocation(locationName);
                         }
                         
                         //locationName = Regex.Replace(locationName, "  ", " ");
 
-                        fd.AddLocation(locationName);
                         fd.AddSeason((Season)(1 << (i - 4)));
                     }
                 }

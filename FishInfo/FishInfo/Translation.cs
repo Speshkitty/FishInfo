@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FishInfo
 {
@@ -97,18 +98,15 @@ namespace FishInfo
             string data = "";
             try
             {
-                data = BaseGameTranslation(LocationPairs.First(x=>x.Key.Equals(Location, System.StringComparison.OrdinalIgnoreCase)).Value);
+                data = BaseGameTranslation(LocationPairs.First(x => x.Key.Equals(Location, System.StringComparison.OrdinalIgnoreCase)).Value);
             }
             catch
             {
-                try
-                {
-                    data = GetString($"location.{Location.ToLower()}");
-                }
-                catch
-                {
-                    data = Location;
-                }
+                string text = GetString($"location.{Location.ToLower()}");
+
+                data = text.Contains("no translation") ?
+                    Regex.Replace(char.ToUpper(Location[0]) + Location.Substring(1), "([A-Z0-9]+)", " $1").Trim() :
+                    text;
             }
 
             return data;

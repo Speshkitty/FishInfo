@@ -15,6 +15,7 @@ namespace FishInfo
         internal Weather weather;
         internal bool IsCrabPot;
         internal Season season;
+        internal string CreatedDescription;
 
         public FishData()
         {
@@ -110,8 +111,54 @@ namespace FishInfo
             return strings.Join();
         }
 
+        private void BuildDescription()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+
+            sb.AppendLine();
+
+            if (IsCrabPot)
+            {
+                sb.AppendLine(
+                    Translation.GetString(
+                        "location.crabpot",
+                        new
+                        {
+                            location = CaughtIn.Join(new Func<string, string>(Translation.GetLocationName))
+                        }
+                    )
+                );
+            }
+            else
+            {
+                sb.AppendLine($"{Translation.GetString("location.prefix")}:");
+                sb.Append("  ");
+
+                if (CaughtIn.Count == 0)
+                {
+                    sb.AppendLine(Translation.GetString("location.none"));
+                }
+                else
+                {
+                    sb.AppendLine(Game1.parseText(CaughtIn.Join(new Func<string, string>(Translation.GetLocationName)), Game1.smallFont, 256));
+                }
+
+                if (season != Season.None)
+                {
+                    sb.AppendLine(Game1.parseText($"{Translation.GetString("season.prefix")}:{Environment.NewLine}  {Translation.GetString(season)}", Game1.smallFont, 256));
+                }
+                sb.AppendLine(Game1.parseText($"{Translation.GetString("time.prefix")}:{Environment.NewLine}  {CalcTimeString()}", Game1.smallFont, 256));
+                sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:{Environment.NewLine}  {Translation.GetString(weather)}", Game1.smallFont, 256));
+
+            }
+
+            CreatedDescription = sb.ToString();
+        }
+
         public override string ToString()
         {
+            /*
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
 
@@ -151,7 +198,14 @@ namespace FishInfo
                 sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:{Environment.NewLine}  {Translation.GetString(weather)}", Game1.smallFont, 256));
                
             }
-            return sb.ToString();
+            return sb.ToString();*/
+
+            if(CreatedDescription is null || CreatedDescription == string.Empty)
+            {
+                BuildDescription();
+            }
+
+            return CreatedDescription;
         }
     }
 }
