@@ -80,14 +80,8 @@ namespace FishInfo
 
                     for (int fish = 0; fish < seasonData.Length; fish += 2)
                     {
-
-                        
                         int FishID = int.Parse(seasonData[fish]);
-
-                        if(FishID == 153)
-                        {
-                            //
-                        }
+                        
 
                         FishData fd = GetOrCreateData(FishID);
 
@@ -127,6 +121,10 @@ namespace FishInfo
                 if(fishInfo.Length == 14)
                 {
                     fd.FishName = fishInfo[13];
+                }
+                else if(fishInfo.Length == 8)
+                {
+                    fd.FishName = fishInfo[7];
                 }
                 else
                 {
