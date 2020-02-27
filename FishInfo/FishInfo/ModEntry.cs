@@ -12,9 +12,13 @@ namespace FishInfo
 
         internal static IModHelper helper;
 
+        internal static ModConfig Config;
+
         public override void Entry(IModHelper helper)
         {
             ModEntry.helper = helper;
+            Config = this.Helper.ReadConfig<ModConfig>();
+            this.Helper.WriteConfig(Config);
             Patches.DoPatches();
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
@@ -117,7 +121,17 @@ namespace FishInfo
             {
                 int FishID = fishData.Key;
                 string[] fishInfo = fishData.Value.Split('/');
+
                 FishData fd = GetOrCreateData(FishID);
+
+                if(fishInfo.Length == 14)
+                {
+                    fd.FishName = fishInfo[13];
+                }
+                else
+                {
+                    fd.FishName = fishInfo[0];
+                }
 
                 if (fishInfo[1] == "trap") //crabpot
                 {

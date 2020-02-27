@@ -15,7 +15,11 @@ namespace FishInfo
         internal Weather weather;
         internal bool IsCrabPot;
         internal Season season;
-        internal string CreatedDescription;
+        internal string InfoLocation;
+        internal string InfoSeason;
+        internal string InfoWeather;
+        internal string InfoTime;
+        internal string FishName;
 
         public FishData()
         {
@@ -24,6 +28,7 @@ namespace FishInfo
             weather = Weather.None;
             IsCrabPot = false;
             season = Season.None;
+            FishName = "";
         }
 
         internal void AddLocation(string location)
@@ -32,6 +37,7 @@ namespace FishInfo
             if (!CaughtIn.Contains(location))
             {
                 CaughtIn.Add(location);
+                CreateLocationString();
             }
         }
         internal void AddTimes(int StartTime, int EndTime)
@@ -40,17 +46,24 @@ namespace FishInfo
             if (!CatchingTimes.Contains(times))
             {
                 CatchingTimes.Add(times);
+                CreateTimeString();
             }
         }
         internal void AddWeather(Weather weather)
         {
-            if(!this.weather.HasFlag(weather))
-            this.weather |= weather;
+            if (!this.weather.HasFlag(weather))
+            {
+                this.weather |= weather;
+                CreateWeatherString();
+            }
         }
         internal void AddSeason(Season season)
         {
             if (!this.season.HasFlag(season))
+            {
                 this.season |= season;
+                CreateSeasonString();
+            }
         }
         internal void SetCrabPot(bool IsCrabPot)
         {
@@ -111,11 +124,10 @@ namespace FishInfo
             return strings.Join();
         }
 
-        private void BuildDescription()
+        internal void CreateLocationString()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
-
             sb.AppendLine();
 
             if (IsCrabPot)
@@ -144,68 +156,63 @@ namespace FishInfo
                     sb.AppendLine(Game1.parseText(CaughtIn.Join(new Func<string, string>(Translation.GetLocationName)), Game1.smallFont, 256));
                 }
 
-                if (season != Season.None)
-                {
-                    sb.AppendLine(Game1.parseText($"{Translation.GetString("season.prefix")}:{Environment.NewLine}  {Translation.GetString(season)}", Game1.smallFont, 256));
-                }
-                sb.AppendLine(Game1.parseText($"{Translation.GetString("time.prefix")}:{Environment.NewLine}  {CalcTimeString()}", Game1.smallFont, 256));
-                sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:{Environment.NewLine}  {Translation.GetString(weather)}", Game1.smallFont, 256));
-
             }
 
-            CreatedDescription = sb.ToString();
+            InfoLocation = sb.ToString();
         }
 
-        public override string ToString()
+        internal void CreateWeatherString()
         {
-            /*
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
+            sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:", Game1.smallFont, 256));
+            sb.AppendLine(Game1.parseText($"  {Translation.GetString(weather)}", Game1.smallFont, 256));
 
+            InfoWeather = sb.ToString();
+        }
+
+        internal void CreateTimeString()
+        {
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine();
+            sb.AppendLine(Game1.parseText($"{Translation.GetString("time.prefix")}:", Game1.smallFont, 256));
+            sb.AppendLine(Game1.parseText($"  {CalcTimeString()}", Game1.smallFont, 256));
 
-            if (IsCrabPot)
+            InfoTime = sb.ToString();
+        }
+
+        internal void CreateSeasonString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine(Game1.parseText($"{Translation.GetString("season.prefix")}:", Game1.smallFont, 256));
+
+            sb.AppendLine(Game1.parseText($"  {Translation.GetString(season)}", Game1.smallFont, 256));
+
+            InfoSeason = sb.ToString();
+        }
+        
+        public override string ToString()
+        {
+
+            if (InfoLocation is null || InfoLocation == string.Empty)
             {
-                sb.AppendLine(
-                    Translation.GetString(
-                        "location.crabpot", 
-                        new
-                        {
-                            location = CaughtIn.Join(new Func<string, string>(Translation.GetLocationName))
-                        }
-                    )
-                );
+                CreateLocationString();
             }
-            else
+            if((InfoSeason is null || InfoSeason == string.Empty) && !IsCrabPot)
             {
-                sb.AppendLine($"{Translation.GetString("location.prefix")}:");
-                sb.Append("  ");
-
-                if (CaughtIn.Count == 0)
-                {
-                    sb.AppendLine(Translation.GetString("location.none"));
-                }
-                else
-                {
-                    sb.AppendLine(Game1.parseText(CaughtIn.Join(new Func<string, string>(Translation.GetLocationName)), Game1.smallFont, 256));
-                }
-                
-                if (season != Season.None)
-                {
-                    sb.AppendLine(Game1.parseText($"{Translation.GetString("season.prefix")}:{Environment.NewLine}  {Translation.GetString(season)}", Game1.smallFont, 256));
-                }
-                sb.AppendLine(Game1.parseText($"{Translation.GetString("time.prefix")}:{Environment.NewLine}  {CalcTimeString()}", Game1.smallFont, 256));
-                sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:{Environment.NewLine}  {Translation.GetString(weather)}", Game1.smallFont, 256));
-               
+                CreateSeasonString();
             }
-            return sb.ToString();*/
-
-            if(CreatedDescription is null || CreatedDescription == string.Empty)
+            if((InfoTime is null || InfoTime == string.Empty) && !IsCrabPot)
             {
-                BuildDescription();
+                CreateTimeString();
+            }
+            if((InfoWeather is null || InfoWeather == string.Empty) && !IsCrabPot)
+            {
+                CreateWeatherString();
             }
 
-            return CreatedDescription;
+            return FishName + Environment.NewLine + InfoLocation + InfoSeason + InfoTime + InfoWeather;
         }
     }
 }

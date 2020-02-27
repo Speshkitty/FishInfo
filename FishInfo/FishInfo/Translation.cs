@@ -66,7 +66,7 @@ namespace FishInfo
 
             if(toReturn == "")
             {
-                return GetString("season.none") + ", ";
+                return GetString("season.all");
             }
 
             return toReturn.Substring(0, toReturn.LastIndexOf(','));
