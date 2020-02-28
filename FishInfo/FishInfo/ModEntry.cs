@@ -1,7 +1,9 @@
 ﻿using StardewModdingAPI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FishInfo
@@ -22,26 +24,8 @@ namespace FishInfo
             Config = this.Helper.ReadConfig<ModConfig>();
             this.Helper.WriteConfig(Config);
             Patches.DoPatches();
-
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-        }
-
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
             
-            if (Helper.ModRegistry.IsLoaded("spacechase0.JsonAssets"))
-            {
-                object api = Helper.ModRegistry.GetApi("spacechase0.JsonAssets");
-                EventInfo EventIdsAssigned = api.GetType().GetEvent("IdsAssigned");
-
-                Delegate d = Delegate.CreateDelegate(EventIdsAssigned.EventHandlerType, this, "LoadData");
-
-                EventIdsAssigned.AddEventHandler(api, d);
-            }
-            else
-            {
-                Helper.Events.GameLoop.SaveLoaded += LoadData;
-            }
+            Helper.Events.GameLoop.SaveLoaded += LoadData;
         }
 
         private static FishData GetOrCreateData(int fishID)
@@ -59,6 +43,7 @@ namespace FishInfo
 
         public void LoadData(object sender, EventArgs e)
         {
+            Monitor.Log("load data ran", LogLevel.Info);
             FishInfo.Clear();
             Dictionary<string, string> LocationData = helper.Content.Load<Dictionary<string, string>>("Data\\Locations", ContentSource.GameContent);
             foreach (KeyValuePair<string, string> locdata in LocationData)
