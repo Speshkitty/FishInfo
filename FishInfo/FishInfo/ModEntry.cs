@@ -11,12 +11,14 @@ namespace FishInfo
         internal static Dictionary<int, FishData> FishInfo = new Dictionary<int, FishData>();
 
         internal static IModHelper helper;
+        internal static IMonitor monitor;
 
         internal static ModConfig Config;
 
         public override void Entry(IModHelper helper)
         {
             ModEntry.helper = helper;
+            ModEntry.monitor = Monitor;
             Config = this.Helper.ReadConfig<ModConfig>();
             this.Helper.WriteConfig(Config);
             Patches.DoPatches();

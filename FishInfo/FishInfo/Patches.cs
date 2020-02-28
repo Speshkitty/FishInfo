@@ -14,11 +14,14 @@ namespace FishInfo
         public static void DoPatches()
         {
             HarmonyInstance harmony = HarmonyInstance.Create("speshkitty.fishinfo.harmony");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-        }
 
-        [HarmonyPatch(typeof(CollectionsPage))]
-        [HarmonyPatch("performHoverAction")]
+            harmony.Patch(typeof(CollectionsPage).GetMethod("performHoverAction", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly),
+                postfix: new HarmonyMethod(typeof(CollectionsPage_PerformHoverAction).GetMethod("Postfix")));
+
+            harmony.Patch(typeof(CollectionsPage).GetMethod("createDescription", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly),
+                postfix: new HarmonyMethod(typeof(CollectionsPage_CreateDescription).GetMethod("Postfix")));
+        }
+        
         public class CollectionsPage_PerformHoverAction
         {
             public static void Postfix(CollectionsPage __instance, ref string ___hoverText, int ___currentTab, int ___currentPage, int x, int y)
@@ -59,9 +62,6 @@ namespace FishInfo
                                     if (ModEntry.Config.UncaughtFishAlwaysShowLocation)
                                     {
                                         sb.AppendLine(fishData.InfoLocation);
-                                        if (fishData.IsCrabPot)
-                                        {
-                                        }
                                     }
                                     if (ModEntry.Config.UncaughtFishAlwaysShowSeason)
                                     {
@@ -80,18 +80,12 @@ namespace FishInfo
                                 }
 
                             }
-                            else
-                            {
-                                
-                            }
                         }
                     }
                 }
             }
         }
-
-        [HarmonyPatch(typeof(CollectionsPage))]
-        [HarmonyPatch("createDescription")]
+        
         public class CollectionsPage_CreateDescription
         {
             public static void Postfix(CollectionsPage __instance, ref string __result, int index)
