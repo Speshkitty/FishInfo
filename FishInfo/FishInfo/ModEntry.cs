@@ -122,13 +122,18 @@ namespace FishInfo
                 {
                     fd.FishName = fishInfo[13];
                 }
+                else if (fishInfo.Length == 13||fishInfo.Length == 7)
+                {
+                    string data = helper.Content.Load<Dictionary<int, string>>("Data\\ObjectInformation", ContentSource.GameContent)[FishID];
+                    fd.FishName = data.Split('/')[4];
+                }
                 else if(fishInfo.Length == 8)
                 {
                     fd.FishName = fishInfo[7];
                 }
                 else
                 {
-                    fd.FishName = fishInfo[0];
+                    fd.FishName = fishInfo[4];
                 }
 
                 if (fishInfo[1] == "trap") //crabpot

@@ -102,7 +102,7 @@ namespace FishInfo
             }
             catch
             {
-                string text = GetString($"location.{Location.ToLower()}");
+                string text = GetString($"location.{Location.ToLower()}".Trim());
 
                 data = text.Contains("no translation") ?
                     Regex.Replace(char.ToUpper(Location[0]) + Location.Substring(1), "([A-Z0-9]+)", " $1").Trim() :

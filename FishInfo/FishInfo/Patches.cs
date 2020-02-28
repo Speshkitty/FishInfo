@@ -59,6 +59,9 @@ namespace FishInfo
                                     if (ModEntry.Config.UncaughtFishAlwaysShowLocation)
                                     {
                                         sb.AppendLine(fishData.InfoLocation);
+                                        if (fishData.IsCrabPot)
+                                        {
+                                        }
                                     }
                                     if (ModEntry.Config.UncaughtFishAlwaysShowSeason)
                                     {
