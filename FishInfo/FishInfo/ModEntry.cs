@@ -1,10 +1,6 @@
 ﻿using StardewModdingAPI;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace FishInfo
 {
@@ -26,6 +22,7 @@ namespace FishInfo
             Patches.DoPatches();
             
             Helper.Events.GameLoop.SaveLoaded += LoadData;
+            Helper.Events.GameLoop.DayStarted += LoadData;
         }
 
         private static FishData GetOrCreateData(int fishID)
@@ -43,7 +40,6 @@ namespace FishInfo
 
         public void LoadData(object sender, EventArgs e)
         {
-            Monitor.Log("load data ran", LogLevel.Info);
             FishInfo.Clear();
             Dictionary<string, string> LocationData = helper.Content.Load<Dictionary<string, string>>("Data\\Locations", ContentSource.GameContent);
             foreach (KeyValuePair<string, string> locdata in LocationData)
@@ -67,18 +63,28 @@ namespace FishInfo
 
                     for (int fish = 0; fish < seasonData.Length; fish += 2)
                     {
-                        int FishID = int.Parse(seasonData[fish]);
+                        if (seasonData[fish] == "-1") continue;
+                        int FishID;
+                        int region;
+                        try
+                        {
+                            ParseInts(seasonData[fish], seasonData[fish + 1], out FishID, out region);
+                        }
+                        catch
+                        {
+                            ParseInts(seasonData[fish], null, out FishID, out region);
+                        }
                         
-
+                        
                         FishData fd = GetOrCreateData(FishID);
 
                         if (locationName.Equals("forest", StringComparison.OrdinalIgnoreCase))
                         {
-                            if (seasonData[fish + 1] == "0" || seasonData[fish + 1] == "-1")
+                            if (region == 0 || region == -1)
                             {
                                 fd.AddLocation("ForestRiver");
                             }
-                            if (seasonData[fish + 1] == "1" || seasonData[fish + 1] == "-1")
+                            if (region == 1 || region == -1)
                             {
                                 fd.AddLocation("ForestPond");
                             }
@@ -147,6 +153,18 @@ namespace FishInfo
                     }
                 }
             }
+        }
+
+        private void ParseInts(string StepInLoop, string NextStepInLoop, out int FishID, out int region)
+        {
+            if(StepInLoop == "1069-1") //Terrible hacky fix for issue that only occurs on spirit's eve when More new Fish is installed
+            {
+                FishID = 1069;
+                region = -1;
+                return;
+            }
+            FishID = int.Parse(StepInLoop);
+            region = int.Parse(NextStepInLoop);
         }
     }
 }
