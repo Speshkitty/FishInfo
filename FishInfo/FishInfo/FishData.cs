@@ -101,6 +101,9 @@ namespace FishInfo
             if (sTime.Length == 3)
             {
                 sTime = sTime.Insert(1, ":");
+            }else if(sTime.Length == 1)
+            {
+                sTime = $"0{sTime}:00";
             }
             else
             {
